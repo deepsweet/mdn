@@ -1,0 +1,9 @@
+.DS_Store/
+.continue/
+coverage/
+data/
+db/
+dist/
+node_modules/
+.env
+.eslintcache
