@@ -22,7 +22,7 @@ See [dataset repo](https://huggingface.co/datasets/deepsweet/mdn) on HuggigFace 
 ### 1. Download dataset and embedding model
 
 ```sh
-npx @deepsweet/mdn download
+npx -y @deepsweet/mdn download
 ```
 
 Both [dataset](https://huggingface.co/datasets/deepsweet/mdn) (\~260 MB) and the [embedding model GGUF file](https://huggingface.co/deepsweet/bge-m3-GGUF-Q4_K_M) (\~438 MB) will be downloaded directly from HugginFace and stored in its default cache location (typically `~/.cache/huggingface/`), just like the `hf download` command does.
