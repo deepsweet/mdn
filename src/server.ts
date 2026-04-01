@@ -58,5 +58,26 @@ export const startMcpServer = async (): Promise<void> => {
 
   const transport = new StdioServerTransport()
 
+  const dispose = async (): Promise<void> => {
+    if (llamaTimeout !== null) {
+      clearTimeout(llamaTimeout)
+    }
+
+    if (llamaContext !== null) {
+      await llamaContext.dispose()
+    }
+
+    db.close()
+    await server.close()
+  }
+
+  transport.onclose = (): void => {
+    dispose().catch(console.error)
+  }
+
+  transport.onerror = (err): void => {
+    console.log(err)
+  }
+
   await server.connect(transport)
 }
