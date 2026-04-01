@@ -22,7 +22,7 @@ See [dataset repo](https://huggingface.co/datasets/deepsweet/mdn) on HuggigFace 
 ### 1. Download dataset and embedding model
 
 ```sh
-npx -y @deepsweet/mdn download
+npx -y @deepsweet/mdn@latest download
 ```
 
 Both [dataset](https://huggingface.co/datasets/deepsweet/mdn) (\~260 MB) and the [embedding model GGUF file](https://huggingface.co/deepsweet/bge-m3-GGUF-Q4_K_M) (\~438 MB) will be downloaded directly from HugginFace and stored in its default cache location (typically `~/.cache/huggingface/`), just like the `hf download` command does.
@@ -35,7 +35,8 @@ Both [dataset](https://huggingface.co/datasets/deepsweet/mdn) (\~260 MB) and the
     "mdn": {
       "command": "npx",
       "args": [
-        "@deepsweet/mdn",
+        "-y",
+        "@deepsweet/mdn@latest",
         "server"
       ],
       "env": {}
@@ -43,6 +44,9 @@ Both [dataset](https://huggingface.co/datasets/deepsweet/mdn) (\~260 MB) and the
   }
 }
 ```
+
+> [!TIP]
+> Remove `@latest` for a full offline experience, but keep in mind that this will cache a fixed version without auto-updating.
 
 The `stdio` server will spawn [llama.cpp](https://github.com/ggml-org/llama.cpp) under the hood, load the embedding model (~655 MB RAM/VRAM), and query the dataset – all on demand.
 
