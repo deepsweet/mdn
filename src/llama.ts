@@ -13,5 +13,11 @@ export const getLlamaContext = async (modelPath: string): Promise<LlamaEmbedding
     threads: 0
   })
 
+  context.onDispose.createOnceListener(() => {
+    model.dispose()
+      .then(() => llama.dispose())
+      .catch(console.error)
+  })
+
   return context
 }
