@@ -5,10 +5,16 @@ import { startMcpServer } from './server.ts'
 
 switch (process.argv[2]) {
   case 'download': {
-    const locale = process.argv[3] ?? env.MDN_DATASET_LOCALE
+    if (env.MDN_DATASET_PATH == null) {
+      const locale = process.argv[3] ?? env.MDN_DATASET_LOCALE
 
-    await downloadDataset(locale)
-    await downloadModel()
+      await downloadDataset(locale)
+    }
+
+    if (env.MDN_MODEL_PATH == null) {
+      await downloadModel()
+    }
+
     break
   }
   case 'server': {
