@@ -28,6 +28,9 @@ export const startMcpServer = async (): Promise<void> => {
       description: 'Reference documentation for Web API, JavaScript, HTML, CSS, SVG and HTTP',
       inputSchema: z.object({
         query: z.string().describe(env.MDN_QUERY_DESCRIPTION)
+      }),
+      outputSchema: z.object({
+        results: z.array(z.string())
       })
     },
     async ({ query }) => {
@@ -51,7 +54,10 @@ export const startMcpServer = async (): Promise<void> => {
         content: results.map((result) => ({
           type: 'text',
           text: result.text
-        }))
+        })),
+        structuredContent: {
+          results: results.map((result) => result.text)
+        }
       }
     }
   )

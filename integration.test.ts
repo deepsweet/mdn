@@ -20,11 +20,12 @@ const transport = new StdioClientTransport({
 await client.connect(transport)
 
 const tools = await client.listTools()
+const tool = tools.tools[0]!
 
 expect(tools.tools.length).toEqual(1)
-expect(tools.tools[0]!.name).toEqual('MDN')
-expect(tools.tools[0]!.description).toEqual('Reference documentation for Web API, JavaScript, HTML, CSS, SVG and HTTP')
-expect(tools.tools[0]!.inputSchema).toEqual({
+expect(tool.name).toEqual('MDN')
+expect(tool.description).toEqual('Reference documentation for Web API, JavaScript, HTML, CSS, SVG and HTTP')
+expect(tool.inputSchema).toEqual({
   type: 'object',
   properties: {
     query: {
@@ -34,6 +35,22 @@ expect(tools.tools[0]!.inputSchema).toEqual({
   },
   required: ['query'],
   $schema: 'http://json-schema.org/draft-07/schema#'
+})
+expect(tool.outputSchema).toEqual({
+  $schema: 'http://json-schema.org/draft-07/schema#',
+  type: 'object',
+  properties: {
+    results: {
+      type: 'array',
+      items: {
+        type: 'string'
+      }
+    }
+  },
+  required: [
+    'results'
+  ],
+  additionalProperties: false
 })
 
 type TResult = {
