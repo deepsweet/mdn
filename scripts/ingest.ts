@@ -1,5 +1,6 @@
 import path from 'node:path'
 import lancedb from '@lancedb/lancedb'
+import pAll from 'p-all'
 import { rimraf } from 'rimraf'
 import { chunkMarkdown } from '../src/chunk.ts'
 import { env } from '../src/env.ts'
@@ -9,6 +10,7 @@ import { getTableName } from '../src/utils.ts'
 import { type TVector, vectorize } from '../src/vectorize.ts'
 
 const MIN_FILE_SIZE = 512
+const CONCURRENCY = 2
 
 const rootDir = process.argv[2]
 
@@ -46,12 +48,14 @@ for await (const file of files) {
   console.log(filePath)
 
   const chunks = chunkMarkdown(document)
-
-  for (const text of chunks) {
+  const actions = chunks.map((text) => async (): Promise<TData> => {
     const vector = await vectorize(llamaContext, text)
 
-    data.push({ text, vector })
-  }
+    return { text, vector }
+  })
+  const results = await pAll(actions, { concurrency: CONCURRENCY })
+
+  data.push(...results)
 }
 
 await llamaContext.dispose()
