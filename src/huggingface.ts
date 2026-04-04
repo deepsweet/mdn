@@ -1,7 +1,6 @@
 import fs from 'node:fs/promises'
 import path from 'path'
-import { getHFHubCachePath, getRepoFolderName, scanCachedRepo, snapshotDownload } from '@huggingface/hub'
-import { getTableName } from './utils.ts'
+import { getCacheFileName, getTableFileName } from './utils.ts'
 import type { RepoType } from '@huggingface/hub'
 
 const DATASET_REPO = 'deepsweet/mdn'
@@ -52,11 +51,11 @@ const getLatestCachedRepoRevision = async (name: string, type: RepoType): Promis
 }
 
 export const downloadDataset = async (locale: string): Promise<void> => {
-  const tableName = getTableName(locale)
+  const tableFileName = getTableFileName(locale)
   const dirPath = await snapshotDownload({
     repo: `datasets/${DATASET_REPO}`,
     // @ts-expect-error - `path` property actually spreads in runtime but not in types
-    path: `data/${tableName}.lance`
+    path: `data/${tableFileName}`
   })
   const dataPath = path.join(dirPath, 'data')
 
