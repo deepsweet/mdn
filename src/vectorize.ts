@@ -1,6 +1,5 @@
 import type { LlamaEmbeddingContext } from 'node-llama-cpp'
-
-export type TVector = number[]
+import type { TVector } from './types.ts'
 
 export const vectorize = async (context: LlamaEmbeddingContext, text: string): Promise<TVector> => {
   const embedding = await context.getEmbeddingFor(text)
