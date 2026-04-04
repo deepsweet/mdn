@@ -17,7 +17,8 @@ export const queryHybrid = async (llamaContext: LlamaEmbeddingContext, table: Ta
   const results = await table
     .query()
     .nearestTo(vector)
-    .fullTextSearch(text)
+    .column('vector')
+    .fullTextSearch(text, { columns: 'text' })
     .rerank(reranker)
     .limit(env.MDN_SEARCH_RESULTS_LIMIT)
     .toArray() as TQueryResult[]
