@@ -1,5 +1,12 @@
 import fs from 'node:fs/promises'
 import path from 'path'
+import {
+  downloadFileToCacheDir,
+  getHFHubCachePath,
+  getRepoFolderName,
+  scanCachedRepo,
+  snapshotDownload
+} from '@huggingface/hub'
 import { getCacheFileName, getTableFileName } from './utils.ts'
 import type { RepoType } from '@huggingface/hub'
 
@@ -89,4 +96,13 @@ export const getModelPath = async (): Promise<string> => {
   const modelPath = path.join(latestRevisionPath, MODEL_FILE)
 
   return modelPath
+}
+
+export const downloadCacheFile = async (locale: string): Promise<void> => {
+  const cacheFileName = getCacheFileName(locale)
+
+  await downloadFileToCacheDir({
+    repo: `datasets/${DATASET_REPO}`,
+    path: `data/${cacheFileName}`
+  })
 }

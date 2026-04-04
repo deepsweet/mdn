@@ -2,14 +2,9 @@ name: update
 
 on:
   workflow_dispatch:
-    inputs:
-      path:
-        description: Data path
-        required: false
-        default: data/
 
 jobs:
-  test:
+  update:
     runs-on: ubuntu-latest
 
     steps:
@@ -45,16 +40,13 @@ jobs:
           git checkout
           ls -1 files/en-us/web/
 
-      - name: Ingest
-        env:
-          MDN_DATASET_PATH: ./db/data/
-        run: |
-          time bun src/index.ts download
-          time bun ingest "${{ inputs.path }}"
-          du -sh --apparent-size db/
+      - name: Download dataset, model and cache
+        run: bun run download en-us
 
-      - name: Upload
+      - name: Update dataset
+        run: bun run update data/files/en-us/web/ en-us
+
+      - name: Upload dataset
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: |
-          bun scripts/upload.ts db/
+        run: bun run upload en-us

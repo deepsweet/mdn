@@ -32,8 +32,10 @@
     "typescript": "^6.0.2"
   },
   "scripts": {
+    "download": "bun scripts/download.ts",
     "chunk": "bun scripts/chunk.ts",
     "ingest": "bun scripts/ingest.ts",
+    "update": "bun scripts/update.ts",
     "query": "bun scripts/query.ts",
     "upload": "bun scripts/upload.ts",
     "check": "tsc --noEmit && eslint --cache scripts/ src/",
