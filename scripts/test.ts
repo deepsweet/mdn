@@ -1,7 +1,7 @@
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 import { expect } from 'bun:test'
-import { env } from './src/env.ts'
+import { env } from '../src/env.ts'
 
 const isCI = String(process.env.CI === 'true')
 const client = new Client({

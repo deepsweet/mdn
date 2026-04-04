@@ -38,6 +38,7 @@
     "update": "bun scripts/update.ts",
     "query": "bun scripts/query.ts",
     "upload": "bun scripts/upload.ts",
+    "test": "bun scripts/test.ts",
     "check": "tsc --noEmit && eslint --cache scripts/ src/",
     "dist": "bun build --format esm --target node --packages external --outdir dist/ src/index.ts"
   },
