@@ -1,10 +1,7 @@
+import { z } from 'zod'
 import { chunkMarkdown } from '../src/chunk.ts'
 
-const filePath = process.argv[2]
-
-if (filePath == null || filePath.length === 0) {
-  throw new Error('File path argument is required')
-}
+const filePath = z.string('File path argument is required').parse(process.argv[2])
 
 const documentFile = Bun.file(filePath)
 const document = await documentFile.text()
