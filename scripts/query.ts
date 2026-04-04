@@ -1,17 +1,13 @@
 import lancedb from '@lancedb/lancedb'
+import { z } from 'zod'
 import { env } from '../src/env.ts'
 import { getDatasetPath, getModelPath } from '../src/huggingface.ts'
 import { getLlamaContext } from '../src/llama.ts'
 import { createReranker, queryHybrid } from '../src/query.ts'
 import { getTableName } from '../src/utils.ts'
 
-const query = process.argv[2]
+const query = z.string('Query argument is required').parse(process.argv[2])
 
-if (query == null || query.length === 0) {
-  throw new Error('Query argument is required')
-}
-
-// const db = await lancedb.connect('hf://datasets/deepsweet/test/data?revision=v0.0.1')
 const datasetPath = await getDatasetPath()
 const db = await lancedb.connect(datasetPath)
 const reranker = await createReranker()
