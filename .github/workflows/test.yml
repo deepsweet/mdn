@@ -39,7 +39,7 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Run TypeScript and ESLint
-        run: bun check
+        run: bun run check
 
       - name: Run unit tests
         run: bun test
@@ -47,6 +47,6 @@ jobs:
       - name: Run integration tests
         timeout-minutes: 5
         run: |
-          bun dist
+          bun run dist
           npx -y . download
-          bun integration.test.ts
+          bun run test
