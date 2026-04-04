@@ -2,7 +2,7 @@ import path from 'path'
 import { commit } from '@huggingface/hub'
 import { z } from 'zod'
 import { getDatasetPath } from '../src/huggingface.ts'
-import { getTableFileName } from '../src/utils.ts'
+import { getCacheFileName, getTableFileName } from '../src/utils.ts'
 import type { CommitOperation } from '@huggingface/hub'
 
 const REPO_NAME = 'deepsweet/mdn'
@@ -11,15 +11,31 @@ const COMMIT_MESSAGE = '♻️ update'
 const locale = z.string('Locale argument is required').parse(process.argv[2])
 
 const tableFileName = getTableFileName(locale)
+const cacheFileName = getCacheFileName(locale)
+
 const datasetPath = await getDatasetPath()
 const rootDir = path.join(datasetPath, tableFileName)
 
+const cachePath = path.join(datasetPath, cacheFileName)
+const cacheFile = Bun.file(cachePath)
+
 const glob = new Bun.Glob('**/*')
 const files = glob.scan(rootDir)
-const operations: CommitOperation[] = [{
-  operation: 'delete',
-  path: `data/${tableFileName}`
-}]
+const operations: CommitOperation[] = [
+  {
+    operation: 'delete',
+    path: `data/${tableFileName}`
+  },
+  {
+    operation: 'delete',
+    path: `data/${cacheFileName}`
+  },
+  {
+    operation: 'addOrUpdate',
+    path: `data/${cacheFileName}`,
+    content: cacheFile
+  }
+]
 
 for await (const file of files) {
   if (file.endsWith('.DS_Store')) {
