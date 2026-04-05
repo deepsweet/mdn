@@ -16,6 +16,20 @@ jobs:
         with:
           bun-version: latest
 
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-
+
+      - name: Install HuggingFace CLI
+        run: pip install huggingface_hub
+
       - name: Cache Bun dependencies
         uses: actions/cache@v4
         with:
@@ -40,7 +54,13 @@ jobs:
           git checkout
           ls -1 files/en-us/web/
 
-      - name: Download dataset, model and cache
+      - name: Cache HuggingFace
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface/hub
+          key: ${{ runner.os }}-huggingface-
+
+      - name: Download dataset and model
         run: bun run download
 
       - name: Update dataset
@@ -50,3 +70,7 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: bun run upload
+
+      - name: Prune HuggingFace revisions
+        if: always()
+        run: hf cache prune --yes

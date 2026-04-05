@@ -27,13 +27,25 @@ jobs:
         with:
           bun-version: latest
 
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-
+
+      - name: Install HuggingFace CLI
+        run: pip install huggingface_hub
+
       - name: Cache Bun dependencies
         uses: actions/cache@v4
         with:
           path: ~/.bun/install/cache
-          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -44,9 +56,19 @@ jobs:
       - name: Run unit tests
         run: bun test
 
+      - name: Cache HuggingFace
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface/hub
+          key: ${{ runner.os }}-huggingface-
+
       - name: Run integration tests
         timeout-minutes: 5
         run: |
           bun run dist
           npx -y . download
           bun run test
+
+      - name: Prune HuggingFace revisions
+        if: always()
+        run: hf cache prune --yes
