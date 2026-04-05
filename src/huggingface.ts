@@ -1,13 +1,12 @@
 import fs from 'node:fs/promises'
 import path from 'path'
 import {
-  downloadFileToCacheDir,
   getHFHubCachePath,
   getRepoFolderName,
   scanCachedRepo,
   snapshotDownload
 } from '@huggingface/hub'
-import { CACHE_FILENAME, DATASET_REPO, MODEL_FILE, MODEL_REPO, TABLE_FILENAME } from './const.ts'
+import { DATASET_REPO, MODEL_FILE, MODEL_REPO } from './const.ts'
 import { env } from './env.ts'
 import type { RepoType } from '@huggingface/hub'
 
@@ -56,9 +55,7 @@ const getLatestCachedRepoRevision = async (name: string, type: RepoType): Promis
 
 export const downloadDataset = async (): Promise<void> => {
   const dirPath = await snapshotDownload({
-    repo: `datasets/${DATASET_REPO}`,
-    // @ts-expect-error - `path` property actually spreads in runtime but not in types
-    path: `data/${TABLE_FILENAME}`
+    repo: `datasets/${DATASET_REPO}`
   })
   const dataPath = path.join(dirPath, 'data')
 
@@ -92,11 +89,4 @@ export const getModelPath = async (): Promise<string> => {
   const modelPath = path.join(latestRevisionPath, MODEL_FILE)
 
   return modelPath
-}
-
-export const downloadCacheFile = async (): Promise<void> => {
-  await downloadFileToCacheDir({
-    repo: `datasets/${DATASET_REPO}`,
-    path: `data/${CACHE_FILENAME}`
-  })
 }

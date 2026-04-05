@@ -1,6 +1,8 @@
 import path from 'path'
 import { commit } from '@huggingface/hub'
-import { CACHE_FILENAME, DATASET_REPO, TABLE_FILENAME } from '../src/const.ts'
+import { CACHE_FILENAME } from './const.ts'
+import { getCacheFile } from './utils.ts'
+import { DATASET_REPO, TABLE_FILENAME } from '../src/const.ts'
 import { getDatasetPath } from '../src/huggingface.ts'
 import type { CommitOperation } from '@huggingface/hub'
 
@@ -15,20 +17,18 @@ const COMMIT_MESSAGE = '♻️ update'
 
 const datasetPath = await getDatasetPath()
 const rootDir = path.join(datasetPath, TABLE_FILENAME)
-
-const cachePath = path.join(datasetPath, CACHE_FILENAME)
-const cacheFile = Bun.file(cachePath)
+const cacheFile = getCacheFile(datasetPath)
 
 const glob = new Bun.Glob('**/*')
 const files = glob.scan(rootDir)
 const operations: CommitOperation[] = [
   {
     operation: 'delete',
-    path: `data/${CACHE_FILENAME}`
+    path: CACHE_FILENAME
   },
   {
     operation: 'addOrUpdate',
-    path: `data/${CACHE_FILENAME}`,
+    path: CACHE_FILENAME,
     content: cacheFile
   },
   {

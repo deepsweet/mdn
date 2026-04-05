@@ -3,7 +3,8 @@ import lancedb from '@lancedb/lancedb'
 import pAll from 'p-all'
 import { CONCURRENCY, MIN_FILE_SIZE } from './const.ts'
 import { chunkMarkdown } from './markdown.ts'
-import { CACHE_FILENAME, TABLE_NAME } from '../src/const.ts'
+import { getCacheFile } from './utils.ts'
+import { TABLE_NAME } from '../src/const.ts'
 import { getDatasetPath, getModelPath } from '../src/huggingface.ts'
 import { getLlamaContext } from '../src/llama.ts'
 import { vectorize } from '../src/vectorize.ts'
@@ -20,8 +21,7 @@ const modelPath = await getModelPath()
 const llamaContext = await getLlamaContext(modelPath)
 
 const datasetPath = await getDatasetPath()
-const cachePath = path.join(datasetPath, CACHE_FILENAME)
-const cacheFile = Bun.file(cachePath)
+const cacheFile = getCacheFile(datasetPath)
 const cache = await cacheFile.json() as Record<string, string>
 
 const db = await lancedb.connect(datasetPath)

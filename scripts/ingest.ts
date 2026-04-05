@@ -4,7 +4,8 @@ import pAll from 'p-all'
 import { rimraf } from 'rimraf'
 import { CONCURRENCY, MIN_FILE_SIZE } from './const.ts'
 import { chunkMarkdown } from './markdown.ts'
-import { CACHE_FILENAME, TABLE_FILENAME, TABLE_NAME } from '../src/const.ts'
+import { getCacheFile } from './utils.ts'
+import { TABLE_FILENAME, TABLE_NAME } from '../src/const.ts'
 import { getDatasetPath, getModelPath } from '../src/huggingface.ts'
 import { getLlamaContext } from '../src/llama.ts'
 import { vectorize } from '../src/vectorize.ts'
@@ -70,8 +71,7 @@ console.log('Total rows:', stats.numRows)
 table.close()
 db.close()
 
-const cachePath = path.join(datasetPath, CACHE_FILENAME)
-const cacheFile = Bun.file(cachePath)
+const cacheFile = getCacheFile(datasetPath)
 const cacheData = JSON.stringify(cache)
 
 await cacheFile.write(cacheData)
