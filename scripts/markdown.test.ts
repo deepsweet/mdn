@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import dedent from 'dedent'
-import { chunkMarkdown } from './chunk.ts'
+import { chunkMarkdown } from './markdown.ts'
 
 describe('chunkMarkdown', () => {
   test('paragraph', () => {
