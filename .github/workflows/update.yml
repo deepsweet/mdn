@@ -36,17 +36,17 @@ jobs:
         run: |
           git clone --no-checkout --depth=1 --filter=tree:0 git@github.com:mdn/content.git data
           cd data
-          git sparse-checkout set --no-cone --stdin < ../scripts/ingest.txt
+          git sparse-checkout set --no-cone --stdin < ../scripts/checkout.txt
           git checkout
           ls -1 files/en-us/web/
 
       - name: Download dataset, model and cache
-        run: bun run download en-us
+        run: bun run download
 
       - name: Update dataset
-        run: bun run update data/files/en-us/web/ en-us
+        run: bun run update data/files/en-us/web/
 
       - name: Upload dataset
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: bun run upload en-us
+        run: bun run upload

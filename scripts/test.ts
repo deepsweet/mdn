@@ -3,18 +3,13 @@ import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 import { expect } from 'bun:test'
 import { env } from '../src/env.ts'
 
-const isCI = String(process.env.CI === 'true')
 const client = new Client({
   name: 'test-client',
   version: '0.1.0'
 })
 const transport = new StdioClientTransport({
   command: 'npx',
-  args: ['.', 'server'],
-  env: {
-    NODE_LLAMA_CPP_NO_GPU: isCI,
-    NODE_LLAMA_CPP_DEBUG: isCI
-  }
+  args: ['.', 'server']
 })
 
 await client.connect(transport)

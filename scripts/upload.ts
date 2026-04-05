@@ -1,22 +1,22 @@
 import path from 'path'
 import { commit } from '@huggingface/hub'
-import { z } from 'zod'
+import { CACHE_FILENAME, DATASET_REPO, TABLE_FILENAME } from '../src/const.ts'
 import { getDatasetPath } from '../src/huggingface.ts'
-import { getCacheFileName, getTableFileName } from '../src/utils.ts'
 import type { CommitOperation } from '@huggingface/hub'
 
-const REPO_NAME = 'deepsweet/mdn'
+const accessToken = process.env.HF_TOKEN
+
+if (accessToken == null || accessToken.length === 0) {
+  console.error('Access Token is required')
+  process.exit(1)
+}
+
 const COMMIT_MESSAGE = '♻️ update'
 
-const locale = z.string('Locale argument is required').parse(process.argv[2])
-
-const tableFileName = getTableFileName(locale)
-const cacheFileName = getCacheFileName(locale)
-
 const datasetPath = await getDatasetPath()
-const rootDir = path.join(datasetPath, tableFileName)
+const rootDir = path.join(datasetPath, TABLE_FILENAME)
 
-const cachePath = path.join(datasetPath, cacheFileName)
+const cachePath = path.join(datasetPath, CACHE_FILENAME)
 const cacheFile = Bun.file(cachePath)
 
 const glob = new Bun.Glob('**/*')
@@ -24,16 +24,16 @@ const files = glob.scan(rootDir)
 const operations: CommitOperation[] = [
   {
     operation: 'delete',
-    path: `data/${tableFileName}`
-  },
-  {
-    operation: 'delete',
-    path: `data/${cacheFileName}`
+    path: `data/${CACHE_FILENAME}`
   },
   {
     operation: 'addOrUpdate',
-    path: `data/${cacheFileName}`,
+    path: `data/${CACHE_FILENAME}`,
     content: cacheFile
+  },
+  {
+    operation: 'delete',
+    path: `data/${TABLE_FILENAME}`
   }
 ]
 
@@ -42,8 +42,8 @@ for await (const file of files) {
     continue
   }
 
-  const fileRelativePath = path.join('data', tableFileName, file)
-  const fileAbsolutePath = path.resolve(datasetPath, tableFileName, file)
+  const fileRelativePath = path.join('data', TABLE_FILENAME, file)
+  const fileAbsolutePath = path.resolve(datasetPath, TABLE_FILENAME, file)
   const fileBlob = Bun.file(fileAbsolutePath)
 
   operations.push({
@@ -54,8 +54,8 @@ for await (const file of files) {
 }
 
 const result = await commit({
-  accessToken: process.env.HF_TOKEN,
-  repo: `datasets/${REPO_NAME}`,
+  accessToken,
+  repo: `datasets/${DATASET_REPO}`,
   title: COMMIT_MESSAGE,
   operations
 })

@@ -55,7 +55,6 @@ The `stdio` server will spawn [llama.cpp](https://github.com/ggml-org/llama.cpp)
 | Env variable               | Default value                                                   | Description                                                                                                       |
 |----------------------------|-----------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
 | `MDN_DATASET_PATH`         | HuggingFace cache                                               | Custom dataset directory path                                                                                     |
-| `MDN_DATASET_LOCALE`       | `en-us`                                                         | Dataset language, currently `en-us` only                                                                          |
 | `MDN_MODEL_PATH`           | HuggingFace cache                                               | Custom model file path                                                                                            |
 | `MDN_MODEL_TTL`            | `1800`                                                          | For how long llama.cpp with embedding model should be kept loaded in memory, in seconds; `0` to prevent unloading |
 | `MDN_QUERY_DESCRIPTION`    | `Natural language query for hybrid vector and full-text search` | Custom search query description in case your LLM does a poor job asking the MCP tool                              |
@@ -64,7 +63,6 @@ The `stdio` server will spawn [llama.cpp](https://github.com/ggml-org/llama.cpp)
 ## To do
 
 - [ ] figure out a better query description so that LLM doesn't over-generate keywords
-- [ ] add more dataset [translations](https://github.com/mdn/translated-content/tree/main/files/)
 - [ ] automatically update and upload the dataset artifacts monthly with GitHub Actions
 
 ## License

@@ -2,21 +2,22 @@ import path from 'node:path'
 import lancedb from '@lancedb/lancedb'
 import pAll from 'p-all'
 import { rimraf } from 'rimraf'
-import { z } from 'zod'
-import { chunkMarkdown } from '../src/chunk.ts'
+import { chunkMarkdown } from './markdown.ts'
+import { CACHE_FILENAME, TABLE_FILENAME, TABLE_NAME } from '../src/const.ts'
 import { getDatasetPath, getModelPath } from '../src/huggingface.ts'
 import { getLlamaContext } from '../src/llama.ts'
-import { getCacheFileName, getTableName } from '../src/utils.ts'
 import { vectorize } from '../src/vectorize.ts'
-import type { TIngestData } from '../src/types.ts'
+import type { TIngestData } from './types.ts'
+
+const rootDir = process.argv[2]
+
+if (rootDir == null || rootDir.length === 0) {
+  console.error('Root directory is required')
+  process.exit(1)
+}
 
 const MIN_FILE_SIZE = 512
 const CONCURRENCY = 2
-
-const [rootDir, locale] = z.tuple([
-  z.string('Root directory argument is required'),
-  z.string('Locale argument is required')
-], 'ingest <root> <locale>').parse(process.argv.slice(2))
 
 const glob = new Bun.Glob('**/*.md')
 const files = glob.scan(rootDir)
@@ -54,14 +55,12 @@ for await (const file of files) {
 await llamaContext.dispose()
 
 const datasetPath = await getDatasetPath()
-const tableFileName = getTableName(locale)
-const tablePath = path.join(datasetPath, tableFileName)
+const tablePath = path.join(datasetPath, TABLE_FILENAME)
 
 await rimraf(tablePath)
 
-const tableName = getTableName(locale)
 const db = await lancedb.connect(datasetPath)
-const table = await db.createTable(tableName, data)
+const table = await db.createTable(TABLE_NAME, data)
 
 await table.createIndex('text', { config: lancedb.Index.fts() })
 await table.waitForIndex(['text_idx'], 60)
@@ -73,8 +72,7 @@ console.log('Total rows:', stats.numRows)
 table.close()
 db.close()
 
-const cacheFileName = getCacheFileName(locale)
-const cachePath = path.join(datasetPath, cacheFileName)
+const cachePath = path.join(datasetPath, CACHE_FILENAME)
 const cacheFile = Bun.file(cachePath)
 const cacheData = JSON.stringify(cache)
 
