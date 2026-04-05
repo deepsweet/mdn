@@ -1,18 +1,20 @@
 import lancedb from '@lancedb/lancedb'
-import { z } from 'zod'
-import { env } from '../src/env.ts'
+import { TABLE_NAME } from '../src/const.ts'
 import { getDatasetPath, getModelPath } from '../src/huggingface.ts'
 import { getLlamaContext } from '../src/llama.ts'
 import { createReranker, queryHybrid } from '../src/query.ts'
-import { getTableName } from '../src/utils.ts'
 
-const query = z.string('Query argument is required').parse(process.argv[2])
+const query = process.argv[2]
+
+if (query == null || query.length === 0) {
+  console.error('Query is required')
+  process.exit(1)
+}
 
 const datasetPath = await getDatasetPath()
 const db = await lancedb.connect(datasetPath)
 const reranker = await createReranker()
-const tableName = getTableName(env.MDN_DATASET_LOCALE)
-const table = await db.openTable(tableName)
+const table = await db.openTable(TABLE_NAME)
 const modelPath = await getModelPath()
 const llamaContext = await getLlamaContext(modelPath)
 const results = await queryHybrid(llamaContext, table, reranker, query)
