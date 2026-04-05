@@ -1,4 +1,1 @@
 telemetry = false
-
-[test]
-root = "src"

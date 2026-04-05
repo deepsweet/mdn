@@ -1,6 +1,6 @@
 import matter from 'gray-matter'
 import { marked } from 'marked'
-import { cleanupText } from './cleanup.ts'
+import { sectionsToSkip, substitutes } from './strings.json'
 import type { Token, Tokens } from 'marked'
 
 // disable GFM autolinks
@@ -13,23 +13,50 @@ marked.use({
   }
 })
 
-const SECTIONS_TO_SKIP = [
-  'Guides',
-  'Related concepts',
-  'Glossary terms',
-  'Formal syntax',
-  'Result',
-  'Results',
-  'Tutorials',
-  'Tutorials and guides',
-  'Tutorials/guides',
-  'Specifications',
-  'Browser compatibility',
-  'See also'
-]
+const getText = (chunks: string[]): string => {
+  const text = chunks
+    .join('')
+    .replaceAll('\n', ' ')
+    .replaceAll('}}{{', '}} {{')
+    .replaceAll('[!NOTE]', substitutes.blockquote_note)
+    .replaceAll('[!TIP]', substitutes.blockquote_tip)
+    .replaceAll('[!IMPORTANT]', substitutes.blockquote_important)
+    .replaceAll('[!WARNING]', substitutes.blockquote_warning)
+    .replaceAll('[!CAUTION]', substitutes.blockquote_caution)
+    .replaceAll(/{{\s*Deprecated_Header[^}]*?}}/gi, substitutes.deprecated_header)
+    .replaceAll(/{{\s*Non-standard_Header[^}]*?}}/gi, substitutes.nonstandard_header)
+    .replaceAll(/{{\s*SecureContext_Header[^}]*?}}/gi, substitutes.secure_context_header)
+    .replaceAll(/{{\s*AvailableInWorkers[^}]*?}}/gi, substitutes.available_in_workers)
+    .replaceAll(/{{\s*AvailableInWorkers\(['"]service['"]\)\s*}}/gi, substitutes.available_in_workers_service)
+    .replaceAll(/{{\s*AvailableInWorkers\(['"]dedicated['"]\)\s*}}/gi, substitutes.available_in_workers_dedicated)
+    .replaceAll(/{{\s*AvailableInWorkers\(['"]window_and_service['"]\)\s*}}/gi, substitutes.available_in_workers_window_and_service)
+    .replaceAll(/{{\s*AvailableInWorkers\(['"]window_and_dedicated['"]\)\s*}}/gi, substitutes.available_in_workers_window_and_dedicated)
+    .replaceAll(/{{\s*AvailableInWorkers\(['"]worker_except_service['"]\)\s*}}/gi, substitutes.available_in_workers_worker_except_service)
+    .replaceAll(/{{\s*AvailableInWorkers\(['"]window_and_worker_except_service['"]\)\s*}}/gi, substitutes.available_in_workers_window_and_worker_except_service)
+    .replaceAll(/{{\s*AvailableInWorkers\(['"]window_and_worker_except_shared['"]\)\s*}}/gi, substitutes.available_in_workers_window_and_worker_except_shared)
+    .replaceAll(/{{\s*SecureContext_Inline[^}]*?}}/gi, substitutes.secure_context_inline)
+    .replaceAll(/{{\s*optional_inline[^}]*?}}/gi, substitutes.optional_inline)
+    .replaceAll(/{{\s*deprecated_inline[^}]*?}}/gi, substitutes.deprecated_inline)
+    .replaceAll(/{{\s*experimental_inline[^}]*?}}/gi, substitutes.experimental_inline)
+    .replaceAll(/{{\s*non-standard_inline[^}]*?}}/gi, substitutes.nonstandard_inline)
+    .replaceAll(/{{\s*ReadOnlyInline[^}]*?}}/gi, substitutes.read_only_inline)
+    .replaceAll(/{{\s*(?:\w+ref|Glossary|HTMLElement|HTTPHeader|HTTPMethod|SVGElement|MathMLElement|SVGAttr|CSP|LiveSampleLink)\s*\(\s*"[^"]+?",\s*"([^"]+?)"[^}]*?}}/gi, '\`$1\`')
+    .replaceAll(/{{\s*(?:\w+ref|Glossary|HTMLElement|HTTPHeader|HTTPMethod|SVGElement|MathMLElement|SVGAttr|CSP|LiveSampleLink)\s*\(\s*'[^']+?',\s*'([^']+?)'[^}]*?}}/gi, '\`$1\`')
+    .replaceAll(/{{\s*(?:\w+ref|Glossary|HTMLElement|HTTPHeader|HTTPMethod|SVGElement|MathMLElement|SVGAttr|CSP|LiveSampleLink)\s*\(\s*"([^"]+?)"[^}]*?}}/gi, '\`$1\`')
+    .replaceAll(/{{\s*(?:\w+ref|Glossary|HTMLElement|HTTPHeader|HTTPMethod|SVGElement|MathMLElement|SVGAttr|CSP|LiveSampleLink)\s*\(\s*'([^']+?)'[^}]*?}}/gi, '\`$1\`')
+    .replaceAll(/{{\s*HTTPStatus\s*\(\s*(\d+?)[^}]*?}}/gi, '\`$1\`')
+    .replaceAll(/{{\s*HTTPStatus\s*\(\s*"([^"]+?)"[^}]*?}}/gi, '\`$1\`')
+    .replaceAll(/{{\s*HTTPStatus\s*\(\s*'([^']+?)'[^}]*?}}/gi, '\`$1\`')
+    .replaceAll(/{{\s*RFC\s*\(\s*(\d+?)[^}]*?}}/gi, 'RFC $1')
+    .replaceAll(/{{\s*RFC\s*\(\s*"([^"]+?)"[^}]*?}}/gi, 'RFC $1')
+    .replaceAll(/{{\s*RFC\s*\(\s*'([^']+?)'[^}]*?}}/gi, 'RFC $1')
+    .replaceAll(/{{\s*(?:DefaultAPISidebar|APIRef|APIListAlpha|JSRef|CSS_Ref|SVGRef|CSSInfo|SVGInfo|SeeCompatTable|EmbedLiveSample|EmbedGHLiveSample|EmbedYouTube|InteractiveExample|ListSubPages|js_property_attributes|Previous|Next|SubpagesWithSummaries|InheritanceDiagram)[^}]*?}}\s*/gi, '')
 
-const mergeText = (chunks: string[]): string => {
-  return cleanupText(chunks.join(''))
+  if (/{{[^}]+?}}/.test(text)) {
+    throw new Error(`Text is not cleaned up: ${text}`)
+  }
+
+  return text
 }
 
 // https://github.com/markedjs/marked/issues/2938
@@ -73,7 +100,7 @@ const processTokens = (tokens: Token[], parent: string | null, nestedListLevel: 
     }
 
     if (isHeadingToken(token)) {
-      if (SECTIONS_TO_SKIP.includes(token.text)) {
+      if (sectionsToSkip.includes(token.text)) {
         isSkippingSection = true
 
         continue
@@ -84,7 +111,7 @@ const processTokens = (tokens: Token[], parent: string | null, nestedListLevel: 
       const chunks = processTokens(token.tokens, 'heading', nestedListLevel)
 
       if (chunks.length > 0) {
-        const text = mergeText(chunks)
+        const text = getText(chunks)
 
         headers[token.depth - 1] = text
         headers.length = token.depth
@@ -107,7 +134,7 @@ const processTokens = (tokens: Token[], parent: string | null, nestedListLevel: 
       const chunks = processTokens(token.tokens, 'paragraph', nestedListLevel)
 
       if (chunks.length > 0) {
-        const text = mergeText(chunks)
+        const text = getText(chunks)
 
         mergeOrAddResult(text)
       }
@@ -119,7 +146,7 @@ const processTokens = (tokens: Token[], parent: string | null, nestedListLevel: 
       const chunks = processTokens(token.tokens, 'blockquote', nestedListLevel)
 
       if (chunks.length > 0) {
-        const text = mergeText(chunks)
+        const text = getText(chunks)
 
         mergeOrAddResult(text)
       }
@@ -197,7 +224,7 @@ const processTokens = (tokens: Token[], parent: string | null, nestedListLevel: 
       const list: string[] = []
       const ths = token.header.map((header) => {
         const chunks = processTokens(header.tokens, 'table', nestedListLevel)
-        const text = mergeText(chunks)
+        const text = getText(chunks)
 
         return text
       })
@@ -212,7 +239,7 @@ const processTokens = (tokens: Token[], parent: string | null, nestedListLevel: 
 
           const chunks = processTokens(row[i]!.tokens, 'table', nestedListLevel)
 
-          text += mergeText(chunks)
+          text += getText(chunks)
 
           if (i < row.length - 1) {
             text += ', '
@@ -235,7 +262,7 @@ const processTokens = (tokens: Token[], parent: string | null, nestedListLevel: 
       const chunks = processTokens(token.tokens, 'text', nestedListLevel)
 
       if (chunks.length > 0) {
-        const text = mergeText(chunks)
+        const text = getText(chunks)
 
         result.push(text)
       }
@@ -248,7 +275,7 @@ const processTokens = (tokens: Token[], parent: string | null, nestedListLevel: 
         const chunks = processTokens(token.tokens, 'text', nestedListLevel)
 
         if (chunks.length > 0) {
-          const text = mergeText(chunks)
+          const text = getText(chunks)
 
           result.push(text)
         }
