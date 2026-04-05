@@ -2,6 +2,7 @@ import path from 'node:path'
 import lancedb from '@lancedb/lancedb'
 import pAll from 'p-all'
 import { rimraf } from 'rimraf'
+import { CONCURRENCY, MIN_FILE_SIZE } from './const.ts'
 import { chunkMarkdown } from './markdown.ts'
 import { CACHE_FILENAME, TABLE_FILENAME, TABLE_NAME } from '../src/const.ts'
 import { getDatasetPath, getModelPath } from '../src/huggingface.ts'
@@ -15,9 +16,6 @@ if (rootDir == null || rootDir.length === 0) {
   console.error('Root directory is required')
   process.exit(1)
 }
-
-const MIN_FILE_SIZE = 512
-const CONCURRENCY = 2
 
 const glob = new Bun.Glob('**/*.md')
 const files = glob.scan(rootDir)
