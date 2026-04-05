@@ -56,11 +56,20 @@ jobs:
       - name: Run unit tests
         run: bun test
 
+      - name: Get HuggingFace commit hashes
+        id: hf
+        run: |
+          DATASET_SHA=$(hf datasets info deepsweet/mdn | jq --join-output '.sha')
+          MODEL_SHA=$(hf models info deepsweet/bge-m3-GGUF-Q4_K_M | jq --join-output '.sha')
+
+          echo "dataset=$DATASET_SHA" >> "$GITHUB_OUTPUT"
+          echo "model=$MODEL_SHA" >> "$GITHUB_OUTPUT"
+
       - name: Cache HuggingFace
         uses: actions/cache@v4
         with:
           path: ~/.cache/huggingface/hub
-          key: ${{ runner.os }}-huggingface-
+          key: ${{ runner.os }}-huggingface-${{ steps.hf.outputs.dataset }}-${{ steps.hf.outputs.model }}
 
       - name: Run integration tests
         timeout-minutes: 5
