@@ -102,11 +102,10 @@ for (const preingestedFile of preingestedFiles) {
 
 if (hasChanges) {
   const indexName = 'text_idx'
-  const indexConfig = lancedb.Index.fts()
 
   await table.dropIndex(indexName)
   await table.optimize({ cleanupOlderThan: new Date() })
-  await table.createIndex('text', { config: indexConfig })
+  await table.createIndex('text', { config: lancedb.Index.fts() })
   await table.waitForIndex([indexName], 60)
 
   const cacheData = JSON.stringify(cache)
