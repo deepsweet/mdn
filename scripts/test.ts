@@ -1,5 +1,4 @@
-import { Client } from '@modelcontextprotocol/sdk/client/index.js'
-import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
+import { Client, StdioClientTransport } from '@modelcontextprotocol/client'
 import { expect } from 'bun:test'
 import { env } from '../src/env.ts'
 
@@ -29,10 +28,10 @@ expect(tool.inputSchema).toEqual({
     }
   },
   required: ['query'],
-  $schema: 'http://json-schema.org/draft-07/schema#'
+  $schema: 'https://json-schema.org/draft/2020-12/schema'
 })
 expect(tool.outputSchema).toEqual({
-  $schema: 'http://json-schema.org/draft-07/schema#',
+  $schema: 'https://json-schema.org/draft/2020-12/schema',
   type: 'object',
   properties: {
     results: {

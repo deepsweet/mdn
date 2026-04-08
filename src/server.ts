@@ -1,6 +1,5 @@
 import lancedb from '@lancedb/lancedb'
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
+import { McpServer, StdioServerTransport } from '@modelcontextprotocol/server'
 import { z } from 'zod'
 import { TABLE_NAME } from './const.ts'
 import { env } from './env.ts'
