@@ -39,7 +39,7 @@ const getLatestCachedRepoRevision = async (name: string, type: RepoType): Promis
   const repo = await scanCachedRepo(repoPath)
 
   if (repo.revisions.length === 0) {
-    throw new Error('Unable to get model path, it needs to be downloaded first')
+    throw new Error(`Unable to get ${type} path, it needs to be downloaded first`)
   }
 
   const latestRevision = repo.revisions.reduce((latest, current) => {

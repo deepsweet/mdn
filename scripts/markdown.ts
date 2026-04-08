@@ -271,7 +271,7 @@ const processTokens = (tokens: Token[], parent: string | null, nestedListLevel: 
     }
 
     if (isTextToken(token)) {
-      if (token.tokens != null) {
+      if (Array.isArray(token.tokens)) {
         const chunks = processTokens(token.tokens, 'text', nestedListLevel)
 
         if (chunks.length > 0) {
