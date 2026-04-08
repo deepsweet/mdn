@@ -62,8 +62,9 @@ The `stdio` server will spawn [llama.cpp](https://github.com/ggml-org/llama.cpp)
 
 ## To do
 
+- [x] automatically update and upload the dataset artifacts monthly with GitHub Actions
 - [ ] figure out a better query description so that LLM doesn't over-generate keywords
-- [ ] automatically update and upload the dataset artifacts monthly with GitHub Actions
+- [ ] automatically prune old dataset revisions like `hf cache prune`
 
 ## License
 
