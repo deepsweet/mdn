@@ -42,5 +42,8 @@
     "check": "tsc --noEmit && eslint --cache scripts/ src/",
     "dist": "bun build --format esm --target node --packages external --outdir dist/ src/index.ts"
   },
+  "trustedDependencies": [
+    "node-llama-cpp"
+  ],
   "license": "MIT"
 }

@@ -25,6 +25,9 @@
       },
     },
   },
+  "trustedDependencies": [
+    "node-llama-cpp",
+  ],
   "packages": {
     "@deepsweet/eslint-config": ["@deepsweet/eslint-config@0.1.0", "", { "dependencies": { "@stylistic/eslint-plugin": "^5.10.0", "eslint-plugin-import": "^2.32.0", "eslint-plugin-perfectionist": "^5.7.0", "globals": "^17.4.0", "typescript-eslint": "^8.58.0" }, "peerDependencies": { "eslint": "^10.1.0", "typescript": "^6.0.2" } }, "sha512-fRDQgp2cy+x/ZYXiI3fDQf3qdnBgdQEIgQ1nGsE6j9bnekp3d3T2FeUXCSIL/Mvhty1HUhKM0JIir7ffc96SmQ=="],
 
