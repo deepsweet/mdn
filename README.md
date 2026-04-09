@@ -59,6 +59,7 @@ The `stdio` server will spawn [llama.cpp](https://github.com/ggml-org/llama.cpp)
 | `MDN_MODEL_TTL`            | `1800`                                                          | For how long llama.cpp with embedding model should be kept loaded in memory, in seconds; `0` to prevent unloading |
 | `MDN_QUERY_DESCRIPTION`    | `Natural language query for hybrid vector and full-text search` | Custom search query description in case your LLM does a poor job asking the MCP tool                              |
 | `MDN_SEARCH_RESULTS_LIMIT` | `3`                                                             | Total search results limit                                                                                        |
+| `HF_TOKEN`                 |                                                                 | Optional HuggingFace access token, helps with occasional "HTTP 429 Too Many Requests"                             |
 
 ## To do
 

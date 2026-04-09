@@ -58,6 +58,8 @@ jobs:
 
       - name: Get HuggingFace commit hashes
         id: hf
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           DATASET_SHA=$(hf datasets info deepsweet/mdn | jq --join-output '.sha')
           MODEL_SHA=$(hf models info deepsweet/bge-m3-GGUF-Q4_K_M | jq --join-output '.sha')
@@ -72,6 +74,8 @@ jobs:
           key: ${{ runner.os }}-huggingface-${{ steps.hf.outputs.dataset }}-${{ steps.hf.outputs.model }}
 
       - name: Download dataset and model
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: bun run download
 
       - name: Prune HuggingFace revisions

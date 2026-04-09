@@ -1,17 +1,14 @@
 import path from 'path'
 import { commit } from '@huggingface/hub'
+import { z } from 'zod'
 import { CACHE_FILENAME } from './const.ts'
 import { getCacheFile } from './utils.ts'
 import { DATASET_REPO, TABLE_FILENAME } from '../src/const.ts'
+import { env } from '../src/env.ts'
 import { getDatasetPath } from '../src/huggingface.ts'
 import type { CommitOperation } from '@huggingface/hub'
 
-const accessToken = process.env.HF_TOKEN
-
-if (accessToken == null || accessToken.length === 0) {
-  console.error('Access Token is required')
-  process.exit(1)
-}
+const accessToken = z.string().parse(env.HF_TOKEN)
 
 const COMMIT_MESSAGE = '♻️ update'
 

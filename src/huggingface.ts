@@ -55,6 +55,7 @@ const getLatestCachedRepoRevision = async (name: string, type: RepoType): Promis
 
 export const downloadDataset = async (): Promise<void> => {
   const dirPath = await snapshotDownload({
+    accessToken: env.HF_TOKEN,
     repo: `datasets/${DATASET_REPO}`
   })
   const dataPath = path.join(dirPath, 'data')
@@ -76,6 +77,7 @@ export const getDatasetPath = async (): Promise<string> => {
 
 export const downloadModel = async (): Promise<void> => {
   await snapshotDownload({
+    accessToken: env.HF_TOKEN,
     repo: MODEL_REPO
   })
 }

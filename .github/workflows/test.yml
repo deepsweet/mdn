@@ -58,6 +58,8 @@ jobs:
 
       - name: Get HuggingFace commit hashes
         id: hf
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           DATASET_SHA=$(hf datasets info deepsweet/mdn | jq --join-output '.sha')
           MODEL_SHA=$(hf models info deepsweet/bge-m3-GGUF-Q4_K_M | jq --join-output '.sha')
@@ -73,6 +75,8 @@ jobs:
 
       - name: Run integration tests
         timeout-minutes: 5
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           bun run dist
           npx -y . download
