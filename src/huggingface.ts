@@ -1,14 +1,16 @@
 import fs from 'node:fs/promises'
 import path from 'path'
 import {
+  datasetInfo,
   getHFHubCachePath,
   getRepoFolderName,
+  modelInfo,
   scanCachedRepo,
   snapshotDownload
 } from '@huggingface/hub'
 import { DATASET_REPO, MODEL_FILE, MODEL_REPO } from './const.ts'
 import { env } from './env.ts'
-import type { RepoType } from '@huggingface/hub'
+import type { CachedRevisionInfo, RepoType } from '@huggingface/hub'
 
 const replaceSymlinksWithHardlinks = async (dir: string): Promise<void> => {
   const entries = await fs.readdir(dir, { withFileTypes: true })
@@ -32,14 +34,19 @@ const replaceSymlinksWithHardlinks = async (dir: string): Promise<void> => {
   }
 }
 
-const getLatestCachedRepoRevision = async (name: string, type: RepoType): Promise<string> => {
+const getCachedRepoPath = (name: string, type: RepoType): string => {
   const cachePath = getHFHubCachePath()
   const repoFolderName = getRepoFolderName({ name, type })
   const repoPath = path.join(cachePath, repoFolderName)
+
+  return repoPath
+}
+
+const getLatestCachedRepoRevision = async (repoPath: string): Promise<CachedRevisionInfo> => {
   const repo = await scanCachedRepo(repoPath)
 
   if (repo.revisions.length === 0) {
-    throw new Error(`Unable to get ${type} path, it needs to be downloaded first`)
+    throw new Error('Unable to get repo revisions, it needs to be downloaded first')
   }
 
   const latestRevision = repo.revisions.reduce((latest, current) => {
@@ -50,18 +57,45 @@ const getLatestCachedRepoRevision = async (name: string, type: RepoType): Promis
     return latest
   })
 
-  return latestRevision.path
+  return latestRevision
+}
+
+const shouldDownloadSnapshot = async (name: string, type: RepoType, sha: string): Promise<boolean> => {
+  try {
+    const repoPath = getCachedRepoPath(name, type)
+    const latestRevision = await getLatestCachedRepoRevision(repoPath)
+
+    if (latestRevision.commitOid !== sha) {
+      await fs.rm(repoPath, { recursive: true, force: true })
+
+      return true
+    }
+  } catch {
+    return true
+  }
+
+  return false
 }
 
 export const downloadDataset = async (): Promise<void> => {
-  const dirPath = await snapshotDownload({
-    accessToken: env.HF_TOKEN,
-    repo: `datasets/${DATASET_REPO}`
+  const info = await datasetInfo({
+    name: DATASET_REPO,
+    additionalFields: ['sha'],
+    accessToken: env.HF_TOKEN
   })
-  const dataPath = path.join(dirPath, 'data')
+  const shouldDownload = await shouldDownloadSnapshot(DATASET_REPO, 'dataset', info.sha)
 
-  // TODO: nuke this dirty hack after https://github.com/lancedb/lancedb/issues/3197
-  await replaceSymlinksWithHardlinks(dataPath)
+  if (shouldDownload) {
+    const snapshotPath = await snapshotDownload({
+      repo: `datasets/${DATASET_REPO}`,
+      accessToken: env.HF_TOKEN
+    })
+
+    const dataPath = path.join(snapshotPath, 'data')
+
+    // TODO: nuke this dirty hack after https://github.com/lancedb/lancedb/issues/3197
+    await replaceSymlinksWithHardlinks(dataPath)
+  }
 }
 
 export const getDatasetPath = async (): Promise<string> => {
@@ -69,17 +103,27 @@ export const getDatasetPath = async (): Promise<string> => {
     return env.MDN_DATASET_PATH
   }
 
-  const latestRevisionPath = await getLatestCachedRepoRevision(DATASET_REPO, 'dataset')
-  const datasetPath = path.join(latestRevisionPath, 'data')
+  const repoPath = getCachedRepoPath(DATASET_REPO, 'dataset')
+  const latestRevision = await getLatestCachedRepoRevision(repoPath)
+  const datasetPath = path.join(latestRevision.path, 'data')
 
   return datasetPath
 }
 
 export const downloadModel = async (): Promise<void> => {
-  await snapshotDownload({
-    accessToken: env.HF_TOKEN,
-    repo: MODEL_REPO
+  const info = await modelInfo({
+    name: MODEL_REPO,
+    additionalFields: ['sha'],
+    accessToken: env.HF_TOKEN
   })
+  const shouldDownload = await shouldDownloadSnapshot(MODEL_REPO, 'model', info.sha)
+
+  if (shouldDownload) {
+    await snapshotDownload({
+      repo: MODEL_REPO,
+      accessToken: env.HF_TOKEN
+    })
+  }
 }
 
 export const getModelPath = async (): Promise<string> => {
@@ -87,8 +131,9 @@ export const getModelPath = async (): Promise<string> => {
     return env.MDN_MODEL_PATH
   }
 
-  const latestRevisionPath = await getLatestCachedRepoRevision(MODEL_REPO, 'model')
-  const modelPath = path.join(latestRevisionPath, MODEL_FILE)
+  const repoPath = getCachedRepoPath(MODEL_REPO, 'model')
+  const latestRevision = await getLatestCachedRepoRevision(repoPath)
+  const modelPath = path.join(latestRevision.path, MODEL_FILE)
 
   return modelPath
 }
