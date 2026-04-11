@@ -67,6 +67,10 @@ The `stdio` server will spawn [llama.cpp](https://github.com/ggml-org/llama.cpp)
 - [x] automatically prune old dataset revisions like `hf cache prune`
 - [ ] figure out a better query description so that LLM doesn't over-generate keywords
 
+## Articles
+
+- [Парсим MDN и пишем оффлайн RAG-MCP](https://habr.com/ru/articles/1019930/) (in Russian)
+
 ## License
 
 The RAG-MCP server itself and the processing scripts are available under MIT.
