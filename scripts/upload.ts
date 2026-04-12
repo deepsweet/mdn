@@ -3,7 +3,7 @@ import { commit } from '@huggingface/hub'
 import { z } from 'zod'
 import { CACHE_FILENAME } from './const.ts'
 import { getCacheFile } from './utils.ts'
-import { DATASET_REPO, TABLE_FILENAME } from '../src/const.ts'
+import { DATASET_DIR, DATASET_REPO, TABLE_FILENAME } from '../src/const.ts'
 import { env } from '../src/env.ts'
 import { getDatasetPath } from '../src/huggingface.ts'
 import type { CommitOperation } from '@huggingface/hub'
@@ -39,7 +39,7 @@ for await (const file of files) {
     continue
   }
 
-  const fileRelativePath = path.join('data', TABLE_FILENAME, file)
+  const fileRelativePath = path.join(DATASET_DIR, TABLE_FILENAME, file)
   const fileAbsolutePath = path.resolve(datasetPath, TABLE_FILENAME, file)
   const fileBlob = Bun.file(fileAbsolutePath)
 

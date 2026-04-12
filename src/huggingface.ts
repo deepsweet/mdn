@@ -8,7 +8,7 @@ import {
   scanCachedRepo,
   snapshotDownload
 } from '@huggingface/hub'
-import { DATASET_REPO, MODEL_FILE, MODEL_REPO } from './const.ts'
+import { DATASET_DIR, DATASET_REPO, MODEL_FILE, MODEL_REPO } from './const.ts'
 import { env } from './env.ts'
 import type { CachedRevisionInfo, RepoType } from '@huggingface/hub'
 
@@ -91,7 +91,7 @@ export const downloadDataset = async (): Promise<void> => {
       accessToken: env.HF_TOKEN
     })
 
-    const dataPath = path.join(snapshotPath, 'data')
+    const dataPath = path.join(snapshotPath, DATASET_DIR)
 
     // TODO: nuke this dirty hack after https://github.com/lancedb/lancedb/issues/3197
     await replaceSymlinksWithHardlinks(dataPath)
@@ -105,7 +105,7 @@ export const getDatasetPath = async (): Promise<string> => {
 
   const repoPath = getCachedRepoPath(DATASET_REPO, 'dataset')
   const latestRevision = await getLatestCachedRepoRevision(repoPath)
-  const datasetPath = path.join(latestRevision.path, 'data')
+  const datasetPath = path.join(latestRevision.path, DATASET_DIR)
 
   return datasetPath
 }
