@@ -13,7 +13,11 @@ switch (process.argv[2]) {
     break
   }
   default: {
-    console.error('Unknown command, use "download" or "server"')
+    console.log('Usage:')
+    console.log('  npx -y @deepsweet/mdn@latest <command>\n')
+    console.log('Available commands:')
+    console.log('  download  Download dataset and embedding model')
+    console.log('  server    Start MCP server')
     process.exit(1)
   }
 }
