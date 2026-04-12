@@ -39,13 +39,13 @@ for await (const file of files) {
     continue
   }
 
-  const fileRelativePath = path.join(DATASET_DIR, TABLE_FILENAME, file)
-  const fileAbsolutePath = path.resolve(datasetPath, TABLE_FILENAME, file)
-  const fileBlob = Bun.file(fileAbsolutePath)
+  const hfPath = path.join(DATASET_DIR, TABLE_FILENAME, file)
+  const fsPath = path.resolve(datasetPath, TABLE_FILENAME, file)
+  const fileBlob = Bun.file(fsPath)
 
   operations.push({
     operation: 'addOrUpdate',
-    path: fileRelativePath,
+    path: hfPath,
     content: fileBlob
   })
 }
