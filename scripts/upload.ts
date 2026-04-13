@@ -10,7 +10,12 @@ import type { CommitOperation } from '@huggingface/hub'
 
 const accessToken = z.string().parse(env.HF_TOKEN)
 
-const COMMIT_MESSAGE = '♻️ update'
+const commitMessage = process.argv[2]
+
+if (commitMessage == null || commitMessage.length === 0) {
+  console.error('Commit message is required')
+  process.exit(1)
+}
 
 const datasetPath = await getDatasetPath()
 const rootDir = path.join(datasetPath, TABLE_FILENAME)
@@ -53,7 +58,7 @@ for await (const file of files) {
 const result = await commit({
   accessToken,
   repo: `datasets/${DATASET_REPO}`,
-  title: COMMIT_MESSAGE,
+  title: commitMessage,
   operations
 })
 
