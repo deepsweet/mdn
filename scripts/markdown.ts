@@ -331,6 +331,10 @@ const getContextualTitle = (title: string, slug: string): string => {
       continue
     }
 
+    if (chunks.includes(segment)) {
+      continue
+    }
+
     if (title.includes(segment)) {
       chunks.push(segment)
       continue
