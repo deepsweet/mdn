@@ -314,16 +314,48 @@ const processTokens = (tokens: Token[], parent: string | null, nestedListLevel: 
   return result
 }
 
+const getContextualTitle = (title: string, slug: string): string => {
+  const segments = slug.split('/')
+  const chunks: string[] = []
+
+  for (let i = 0; i < segments.length; i++) {
+    const segment = segments[i]!
+
+    if (i === 0 && segment === 'Web') {
+      continue
+    }
+
+    if (segment === 'Reference') {
+      continue
+    }
+
+    if (title.includes(segment)) {
+      chunks.push(segment)
+      continue
+    }
+
+    const text = segment.replaceAll('_', ' ')
+
+    chunks.push(text)
+  }
+
+  const result = chunks.join(' - ')
+
+  return result
+}
+
 type TMatter = {
   content: string,
   data: {
-    title: string
+    title: string,
+    slug: string
   }
 }
 
 export const chunkMarkdown = (document: string): string[] => {
   const { content, data } = matter(document) as unknown as TMatter
-  const tokens = marked.lexer(`# ${data.title}\n\n${content}`)
+  const title = getContextualTitle(data.title, data.slug)
+  const tokens = marked.lexer(`# ${title}\n\n${content}`)
   const chunks = processTokens(tokens, null, 0)
 
   return chunks
