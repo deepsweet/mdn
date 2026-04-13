@@ -5,3 +5,8 @@ export type TIngestData = {
   file: string,
   vector: TVector
 }
+
+export type TCache = {
+  timestamp: number,
+  files: Record<string, string>
+}
