@@ -7,6 +7,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       Paragraph.
@@ -14,7 +15,7 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         Paragraph.
       `)
@@ -26,7 +27,8 @@ describe('chunkMarkdown', () => {
   test('header', () => {
     const input = dedent(`
       ---
-      title: Title
+      title: Foo bar Baz_qux
+      slug: Web/JavaScript/Reference/Foo_bar/Baz_qux
       ---
 
       Paragraph 1.
@@ -46,17 +48,17 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Foo bar - Baz_qux:
 
         Paragraph 1.
       `),
       dedent(`
-        Title - Header 1 - Header 1.1 - Header 1.1.1:
+        JavaScript - Foo bar - Baz_qux - Header 1 - Header 1.1 - Header 1.1.1:
 
         Paragraph 2.
       `),
       dedent(`
-        Title - Header 2:
+        JavaScript - Foo bar - Baz_qux - Header 2:
 
         Paragraph 3.
       `)
@@ -69,6 +71,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       **strong** text **strong**
@@ -76,7 +79,7 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         strong text strong
       `)
@@ -89,6 +92,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       *em* text *em*
@@ -96,7 +100,7 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         em text em
       `)
@@ -109,6 +113,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       \`codespan\` text \`codespan\`
@@ -116,7 +121,7 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         \`codespan\` text \`codespan\`
       `)
@@ -129,6 +134,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       text [***link***](url) text
@@ -136,7 +142,7 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         text link text
       `)
@@ -149,6 +155,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       > Blockquote.
@@ -156,7 +163,7 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         Blockquote.
       `)
@@ -169,6 +176,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       \`\`\`ts
@@ -179,7 +187,7 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         Example:
 
@@ -195,6 +203,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       - item 1
@@ -204,7 +213,7 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         - item 1
         - item 2
@@ -219,6 +228,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       - item 1
@@ -233,7 +243,7 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         - item 1
         - item 2
@@ -253,6 +263,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       - *item 1*
@@ -267,7 +278,7 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         - item 1: item 1 definition. Paragraph 1. Paragraph 2.
           - \`item 1.1\` link: \`item 1.1\` definition.
@@ -283,6 +294,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       - item 1
@@ -299,7 +311,7 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         - item 1: item 1 definition. Paragraph 1. Blockquote. Paragraph 2.
         - item 2
@@ -313,6 +325,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       1. item 1
@@ -322,7 +335,7 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         - item 1
         - item 2
@@ -337,6 +350,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       Paragraph 1.
@@ -348,12 +362,12 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         Paragraph 1.
       `),
       dedent(`
-        Title - Header:
+        JavaScript - Title - Header:
 
         Paragraph 2.
      `)
@@ -366,6 +380,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       Paragraph 1.
@@ -375,7 +390,7 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         Paragraph 1.
 
@@ -390,6 +405,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       > Blockquote 1.
@@ -401,12 +417,12 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         Blockquote 1.
       `),
       dedent(`
-        Title - Header:
+        JavaScript - Title - Header:
 
         Blockquote 2.
      `)
@@ -419,6 +435,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       > Blockquote 1.
@@ -428,7 +445,7 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         Blockquote 1.
 
@@ -443,6 +460,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       Paragraph.
@@ -454,12 +472,12 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         Paragraph.
       `),
       dedent(`
-        Title - Header:
+        JavaScript - Title - Header:
 
         Blockquote.
      `)
@@ -472,6 +490,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       Paragraph.
@@ -481,7 +500,7 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         Paragraph.
 
@@ -496,6 +515,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       > Blockquote.
@@ -507,12 +527,12 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         Blockquote.
       `),
       dedent(`
-        Title - Header:
+        JavaScript - Title - Header:
 
         Paragraph.
      `)
@@ -525,6 +545,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       > Blockquote.
@@ -534,7 +555,7 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         Blockquote.
 
@@ -549,6 +570,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       Paragraph.
@@ -563,12 +585,12 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         Paragraph.
       `),
       dedent(`
-        Title - Header:
+        JavaScript - Title - Header:
 
         Example:
 
@@ -584,6 +606,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       Paragraph.
@@ -596,7 +619,7 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         Paragraph.
 
@@ -614,6 +637,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       \`\`\`ts
@@ -629,7 +653,7 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         Example:
 
@@ -650,6 +674,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       Paragraph:
@@ -660,7 +685,7 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         Paragraph:
 
@@ -676,6 +701,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       | Header 1 | Header 2 | Header 3 |
@@ -686,7 +712,7 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         - Header 1: Cell 1, Header 2: Cell 2, Header 3: Cell 3
         - Header 1: Cell 4, Header 2: Cell 5, Header 3: Cell 6
@@ -700,6 +726,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       |          | Header 2 | Header 3 |
@@ -710,7 +737,7 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         - Cell 1, Header 2: Cell 2, Header 3: Cell 3
         - Cell 4, Header 2: Cell 5, Header 3: Cell 6
@@ -724,6 +751,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Title
+      slug: Web/JavaScript/Reference/Title
       ---
 
       Paragraph 1.
@@ -739,12 +767,12 @@ describe('chunkMarkdown', () => {
     const result = chunkMarkdown(input)
     const expected = [
       dedent(`
-        Title:
+        JavaScript - Title:
 
         Paragraph 1.
       `),
       dedent(`
-        Title - Header:
+        JavaScript - Title - Header:
 
         Paragraph 3.
       `)

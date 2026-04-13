@@ -36,9 +36,7 @@ for await (const file of files) {
   console.log(file)
 
   const document = await documentFile.text()
-  const hash = Bun.hash(document).toString(16)
-  // const hash = Bun.hash.rapidhash(document).toString(16)
-  // const hash = Bun.SHA256.hash(document, 'hex')
+  const hash = Bun.SHA256.hash(document, 'hex')
 
   cache[file] = hash
 
