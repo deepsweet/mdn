@@ -58,7 +58,7 @@ for await (const file of files) {
 const result = await commit({
   accessToken,
   repo: `datasets/${DATASET_REPO}`,
-  title: commitMessage,
+  title: `♻️ ${commitMessage}`,
   operations
 })
 
