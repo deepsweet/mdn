@@ -8,7 +8,7 @@ import { TABLE_NAME } from '../src/const.ts'
 import { getDatasetPath, getModelPath } from '../src/huggingface.ts'
 import { getLlamaContext } from '../src/llama.ts'
 import { vectorize } from '../src/vectorize.ts'
-import type { TIngestData } from './types.ts'
+import type { TCache, TIngestData } from './types.ts'
 
 const rootDir = process.argv[2]
 
@@ -22,7 +22,7 @@ const llamaContext = await getLlamaContext(modelPath)
 
 const datasetPath = await getDatasetPath()
 const cacheFile = getCacheFile(datasetPath)
-const cache = await cacheFile.json() as Record<string, string>
+const cache = await cacheFile.json() as TCache
 
 const db = await lancedb.connect(datasetPath)
 const table = await db.openTable(TABLE_NAME)
@@ -48,7 +48,7 @@ for await (const file of files) {
   const hash = Bun.SHA256.hash(document, 'hex')
 
   const isNewFile = !Reflect.has(cache, file)
-  const isChangedFile = cache[file] !== hash
+  const isChangedFile = cache.files[file] !== hash
 
   if (isNewFile || isChangedFile) {
     console.log(`${isNewFile ? '+' : '*'} ${file}`)
@@ -58,7 +58,7 @@ for await (const file of files) {
     }
 
     hasChanges = true
-    cache[file] = hash
+    cache.files[file] = hash
 
     const chunks = chunkMarkdown(document)
     const actions = chunks.map((text) => async (): Promise<TIngestData> => {
@@ -107,6 +107,8 @@ if (hasChanges) {
   await table.optimize({ cleanupOlderThan: new Date() })
   await table.createIndex('text', { config: lancedb.Index.fts() })
   await table.waitForIndex([indexName], 60)
+
+  cache.timestamp = Date.now()
 
   const cacheData = JSON.stringify(cache)
 

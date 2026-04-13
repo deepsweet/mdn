@@ -9,7 +9,7 @@ import { TABLE_FILENAME, TABLE_NAME } from '../src/const.ts'
 import { getDatasetPath, getModelPath } from '../src/huggingface.ts'
 import { getLlamaContext } from '../src/llama.ts'
 import { vectorize } from '../src/vectorize.ts'
-import type { TIngestData } from './types.ts'
+import type { TCache, TIngestData } from './types.ts'
 
 const rootDir = process.argv[2]
 
@@ -23,7 +23,10 @@ const files = glob.scan(rootDir)
 const modelPath = await getModelPath()
 const llamaContext = await getLlamaContext(modelPath)
 const data: TIngestData[] = []
-const cache: Record<string, string> = {}
+const cache: TCache = {
+  timestamp: 0,
+  files: {}
+}
 
 for await (const file of files) {
   const filePath = path.join(rootDir, file)
@@ -38,7 +41,7 @@ for await (const file of files) {
   const document = await documentFile.text()
   const hash = Bun.SHA256.hash(document, 'hex')
 
-  cache[file] = hash
+  cache.files[file] = hash
 
   const chunks = chunkMarkdown(document)
   const actions = chunks.map((text) => async (): Promise<TIngestData> => {
@@ -70,6 +73,8 @@ console.log('Total rows:', stats.numRows)
 
 table.close()
 db.close()
+
+cache.timestamp = Date.now()
 
 const cacheFile = getCacheFile(datasetPath)
 const cacheData = JSON.stringify(cache)
