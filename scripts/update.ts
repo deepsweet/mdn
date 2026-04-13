@@ -45,7 +45,7 @@ for await (const file of files) {
   existingFiles.push(file)
 
   const document = await documentFile.text()
-  const hash = Bun.hash(document).toString(16)
+  const hash = Bun.SHA256.hash(document, 'hex')
 
   const isNewFile = !Reflect.has(cache, file)
   const isChangedFile = cache[file] !== hash
