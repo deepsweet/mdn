@@ -747,6 +747,37 @@ describe('chunkMarkdown', () => {
     expect(result).toEqual(expected)
   })
 
+  test('replace &lt; and &gt;', () => {
+    const input = dedent(`
+      ---
+      title: Title
+      slug: Web/JavaScript/Reference/Title
+      ---
+
+      ## Header &lt;tag&gt;
+
+      Paragraph \`test &lt;tag&gt; test\`.
+
+      Paragraph \`&lt;\` and \`&gt;\`
+
+      Paragraph &lt;tag&gt;.
+    `)
+    const result = chunkMarkdown(input)
+    const expected = [
+      dedent(`
+        JavaScript - Title - Header <tag>:
+
+        Paragraph \`test &lt;tag&gt; test\`.
+
+        Paragraph \`&lt;\` and \`&gt;\`
+
+        Paragraph <tag>.
+      `)
+    ]
+
+    expect(result).toEqual(expected)
+  })
+
   test('skip sections', () => {
     const input = dedent(`
       ---

@@ -51,6 +51,8 @@ const getText = (chunks: string[]): string => {
     .replaceAll(/{{\s*RFC\s*\(\s*"([^"]+?)"[^}]*?}}/gi, 'RFC $1')
     .replaceAll(/{{\s*RFC\s*\(\s*'([^']+?)'[^}]*?}}/gi, 'RFC $1')
     .replaceAll(/{{\s*(?:DefaultAPISidebar|APIRef|APIListAlpha|JSRef|CSS_Ref|SVGRef|CSSInfo|SVGInfo|SeeCompatTable|EmbedLiveSample|EmbedGHLiveSample|EmbedYouTube|InteractiveExample|ListSubPages|js_property_attributes|Previous|Next|SubpagesWithSummaries|InheritanceDiagram)[^}]*?}}\s*/gi, '')
+    .replaceAll(/(?<!`[^`]*?)&lt;(?![^`]*`)/g, '<')
+    .replaceAll(/(?<!`[^`]*?)&gt;(?![^`]*`)/g, '>')
 
   if (/{{[^}]+?}}/.test(text)) {
     throw new Error(`Text is not cleaned up: ${text}`)
