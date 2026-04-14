@@ -36,7 +36,7 @@ for await (const file of files) {
     continue
   }
 
-  console.log(file)
+  console.log(filePath)
 
   const document = await documentFile.text()
   const hash = Bun.SHA256.hash(document, 'hex')

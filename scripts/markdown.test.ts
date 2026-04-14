@@ -28,7 +28,7 @@ describe('chunkMarkdown', () => {
     const input = dedent(`
       ---
       title: Foo bar Baz_qux
-      slug: Web/JavaScript/Reference/Foo_bar/Baz_qux
+      slug: Web/JavaScript/Reference/Foo_bar/Baz_qux/Baz_qux
       ---
 
       Paragraph 1.

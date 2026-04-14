@@ -1,17 +1,43 @@
 import matter from 'gray-matter'
 import { marked } from 'marked'
-import { sectionsToSkip, substitutes } from './strings.json'
 import type { Token, Tokens } from 'marked'
 
-// disable GFM autolinks
-// https://github.com/markedjs/marked/issues/882
-marked.use({
-  tokenizer: {
-    url() {
-      return
-    }
-  }
-})
+const sectionsToSkip = [
+  'Guides',
+  'Related concepts',
+  'Formal syntax',
+  'Result',
+  'Results',
+  'Tutorials',
+  'Tutorials and guides',
+  'Specifications',
+  'Browser compatibility',
+  'See also'
+]
+const substitutes = {
+  blockquote_note: 'Note:',
+  blockquote_tip: 'Tip:',
+  blockquote_important: 'Important:',
+  blockquote_warning: 'Warning:',
+  blockquote_caution: 'Caution:',
+  deprecated_header: 'Deprecated: This feature is no longer recommended.',
+  nonstandard_header: 'Non-standard: This feature is not standardized.',
+  secure_context_header: 'Secure context: This feature is available only in secure contexts (HTTPS).',
+  available_in_workers: 'Note: This feature is available in Web Workers.',
+  available_in_workers_service: 'Note: This feature is only available in Service Workers.',
+  available_in_workers_dedicated: 'Note: This feature is only available in Dedicated Web Workers.',
+  available_in_workers_window_and_service: 'Note: This feature is available in Service Workers.',
+  available_in_workers_window_and_dedicated: 'Note: This feature is available in Dedicated Web Workers.',
+  available_in_workers_worker_except_service: 'Note: This feature is only available in Web Workers, except for Service Workers.',
+  available_in_workers_window_and_worker_except_service: 'Note: This feature is available in Web Workers, except for Service Workers.',
+  available_in_workers_window_and_worker_except_shared: 'Note: This feature is available in Web Workers, except for Shared Web Workers.',
+  secure_context_inline: '(secure context)',
+  optional_inline: '(optional)',
+  deprecated_inline: '(deprecated)',
+  experimental_inline: '(experimental)',
+  nonstandard_inline: '(non-standard)',
+  read_only_inline: '(read only)'
+}
 
 const getText = (chunks: string[]): string => {
   const text = chunks
@@ -40,17 +66,17 @@ const getText = (chunks: string[]): string => {
     .replaceAll(/{{\s*experimental_inline[^}]*?}}/gi, substitutes.experimental_inline)
     .replaceAll(/{{\s*non-standard_inline[^}]*?}}/gi, substitutes.nonstandard_inline)
     .replaceAll(/{{\s*ReadOnlyInline[^}]*?}}/gi, substitutes.read_only_inline)
-    .replaceAll(/{{\s*(?:\w+ref|Glossary|HTMLElement|HTTPHeader|HTTPMethod|SVGElement|MathMLElement|SVGAttr|CSP|LiveSampleLink)\s*\(\s*"[^"]+?",\s*"([^"]+?)"[^}]*?}}/gi, '\`$1\`')
-    .replaceAll(/{{\s*(?:\w+ref|Glossary|HTMLElement|HTTPHeader|HTTPMethod|SVGElement|MathMLElement|SVGAttr|CSP|LiveSampleLink)\s*\(\s*'[^']+?',\s*'([^']+?)'[^}]*?}}/gi, '\`$1\`')
-    .replaceAll(/{{\s*(?:\w+ref|Glossary|HTMLElement|HTTPHeader|HTTPMethod|SVGElement|MathMLElement|SVGAttr|CSP|LiveSampleLink)\s*\(\s*"([^"]+?)"[^}]*?}}/gi, '\`$1\`')
-    .replaceAll(/{{\s*(?:\w+ref|Glossary|HTMLElement|HTTPHeader|HTTPMethod|SVGElement|MathMLElement|SVGAttr|CSP|LiveSampleLink)\s*\(\s*'([^']+?)'[^}]*?}}/gi, '\`$1\`')
+    .replaceAll(/{{\s*(?:domxref|jsxref|cssxref|WebExtAPIRef|Glossary|HTMLElement|HTTPHeader|HTTPMethod|SVGElement|MathMLElement|SVGAttr|CSP|LiveSampleLink)\s*\(\s*"[^"]+?",\s*"([^"]+?)"[^}]*?}}/gi, '\`$1\`')
+    .replaceAll(/{{\s*(?:domxref|jsxref|cssxref|WebExtAPIRef|Glossary|HTMLElement|HTTPHeader|HTTPMethod|SVGElement|MathMLElement|SVGAttr|CSP|LiveSampleLink)\s*\(\s*'[^']+?',\s*'([^']+?)'[^}]*?}}/gi, '\`$1\`')
+    .replaceAll(/{{\s*(?:domxref|jsxref|cssxref|WebExtAPIRef|Glossary|HTMLElement|HTTPHeader|HTTPMethod|SVGElement|MathMLElement|SVGAttr|CSP|LiveSampleLink)\s*\(\s*"([^"]+?)"[^}]*?}}/gi, '\`$1\`')
+    .replaceAll(/{{\s*(?:domxref|jsxref|cssxref|WebExtAPIRef|Glossary|HTMLElement|HTTPHeader|HTTPMethod|SVGElement|MathMLElement|SVGAttr|CSP|LiveSampleLink)\s*\(\s*'([^']+?)'[^}]*?}}/gi, '\`$1\`')
     .replaceAll(/{{\s*HTTPStatus\s*\(\s*(\d+?)[^}]*?}}/gi, '\`$1\`')
     .replaceAll(/{{\s*HTTPStatus\s*\(\s*"([^"]+?)"[^}]*?}}/gi, '\`$1\`')
     .replaceAll(/{{\s*HTTPStatus\s*\(\s*'([^']+?)'[^}]*?}}/gi, '\`$1\`')
     .replaceAll(/{{\s*RFC\s*\(\s*(\d+?)[^}]*?}}/gi, 'RFC $1')
     .replaceAll(/{{\s*RFC\s*\(\s*"([^"]+?)"[^}]*?}}/gi, 'RFC $1')
     .replaceAll(/{{\s*RFC\s*\(\s*'([^']+?)'[^}]*?}}/gi, 'RFC $1')
-    .replaceAll(/{{\s*(?:DefaultAPISidebar|APIRef|APIListAlpha|JSRef|CSS_Ref|SVGRef|CSSInfo|SVGInfo|SeeCompatTable|EmbedLiveSample|EmbedGHLiveSample|EmbedYouTube|InteractiveExample|ListSubPages|js_property_attributes|Previous|Next|SubpagesWithSummaries|InheritanceDiagram)[^}]*?}}\s*/gi, '')
+    .replaceAll(/{{\s*(?:DefaultAPISidebar|APIRef|JSRef|CSSInfo|SVGInfo|SeeCompatTable|EmbedLiveSample|EmbedGHLiveSample|EmbedYouTube|InteractiveExample|ListSubPages|js_property_attributes|Previous|Next|SubpagesWithSummaries|InheritanceDiagram)[^}]*?}}\s*/gi, '')
     .replaceAll(/(?<!`[^`]*?)&lt;(?![^`]*`)/g, '<')
     .replaceAll(/(?<!`[^`]*?)&gt;(?![^`]*`)/g, '>')
 
@@ -331,6 +357,10 @@ const getContextualTitle = (title: string, slug: string): string => {
       continue
     }
 
+    if (chunks.includes(segment)) {
+      continue
+    }
+
     if (title.includes(segment)) {
       chunks.push(segment)
       continue
@@ -345,6 +375,16 @@ const getContextualTitle = (title: string, slug: string): string => {
 
   return result
 }
+
+// disable GFM autolinks
+// https://github.com/markedjs/marked/issues/882
+marked.use({
+  tokenizer: {
+    url() {
+      return
+    }
+  }
+})
 
 type TMatter = {
   content: string,
