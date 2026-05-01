@@ -2,7 +2,7 @@ name: update
 
 on:
   schedule:
-    - cron: '0 0 1 * *'
+    - cron: '0 0 * * 1'
   workflow_dispatch:
 
 jobs:
@@ -88,5 +88,5 @@ jobs:
       - name: Upload dataset
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: bun run upload 'monthly autoupdate'
+        run: bun run upload 'weekly autoupdate'
 
