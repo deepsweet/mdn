@@ -47,7 +47,7 @@ for await (const file of files) {
   const document = await documentFile.text()
   const hash = Bun.SHA256.hash(document, 'hex')
 
-  const isNewFile = !Reflect.has(cache, file)
+  const isNewFile = !Reflect.has(cache.files, file)
   const isChangedFile = cache.files[file] !== hash
 
   if (isNewFile || isChangedFile) {
@@ -94,7 +94,7 @@ for (const preingestedFile of preingestedFiles) {
 
     console.log(`- ${preingestedFile}`)
 
-    Reflect.deleteProperty(cache, preingestedFile)
+    Reflect.deleteProperty(cache.files, preingestedFile)
 
     await table.delete(`file = '${preingestedFile}'`)
   }
